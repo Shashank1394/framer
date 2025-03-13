@@ -1,3 +1,4 @@
+// App.jsx
 import {
   easeInOut,
   motion,
@@ -12,9 +13,7 @@ const gridContainerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: {
-      staggerChildren: 0.25,
-    },
+    transition: { staggerChildren: 0.25 },
   },
 };
 
@@ -29,24 +28,28 @@ const svgIconVariants = {
 };
 
 function App() {
+  // For the grid section's scroll progress
   const { scrollYProgress: completionProgress } = useScroll();
 
-  const containerRef = useRef(null);
+  // Create a separate ref for the text section
+  const textSectionRef = useRef(null);
 
-  const isInView = useInView(containerRef, { once: true });
+  // Hook to detect if text section is in view (triggers once)
+  const isTextInView = useInView(textSectionRef, { once: true });
   const mainControls = useAnimation();
 
+  // Scroll progress specifically for the text section animations
   const { scrollYProgress } = useScroll({
-    target: containerRef,
+    target: textSectionRef,
     offset: ["start end", "end end"],
   });
 
+  // Create transform animations for paragraphs
   const paragraphOneValue = useTransform(
     scrollYProgress,
     [0, 1],
     ["-100%", "0%"]
   );
-
   const paragraphTwoValue = useTransform(
     scrollYProgress,
     [0, 1],
@@ -54,13 +57,14 @@ function App() {
   );
 
   useEffect(() => {
-    if (isInView) {
+    if (isTextInView) {
       mainControls.start("visible");
     }
-  }, [isInView, mainControls]);
+  }, [isTextInView, mainControls]);
 
   return (
     <div className="flex flex-col gap-10 overflow-x-hidden">
+      {/* Grid Animations Section */}
       <motion.section
         variants={gridContainerVariants}
         initial="hidden"
@@ -70,7 +74,7 @@ function App() {
         {/* Fade Up */}
         <motion.div
           variants={gridSquareVariants}
-          className="bg-slate-800 aspect-square rounded-lg justify-center flex items-center gap-10"
+          className="bg-slate-800 aspect-square rounded-lg flex items-center justify-center gap-10"
         >
           <motion.div
             className="w-25 h-25 bg-stone-100 rounded-lg"
@@ -89,7 +93,7 @@ function App() {
         {/* Shape Shifting */}
         <motion.div
           variants={gridSquareVariants}
-          className="bg-slate-800 aspect-square rounded-lg justify-center flex items-center gap-10"
+          className="bg-slate-800 aspect-square rounded-lg flex items-center justify-center gap-10"
         >
           <motion.div
             className="w-1/3 h-1/3 shadow-md bg-rose-400"
@@ -110,7 +114,7 @@ function App() {
         {/* Button */}
         <motion.div
           variants={gridSquareVariants}
-          className="bg-slate-800 aspect-square rounded-lg justify-center flex items-center gap-10"
+          className="bg-slate-800 aspect-square rounded-lg flex items-center justify-center gap-10"
         >
           <motion.button
             whileTap={{ scale: 0.9 }}
@@ -129,10 +133,10 @@ function App() {
         {/* Drag */}
         <motion.div
           variants={gridSquareVariants}
-          className="bg-slate-800 aspect-square rounded-lg justify-center flex items-center gap-10"
+          className="bg-slate-800 aspect-square rounded-lg flex items-center justify-center gap-10"
         >
           <motion.div
-            className="w-1/3 h-1/3 bg-orange-500 rounded-3xl cursor-grab text-4xl text-gray-800 font-medium text-center flex items-center justify-center"
+            className="w-1/3 h-1/3 bg-orange-500 rounded-3xl cursor-grab text-4xl text-gray-800 font-medium flex items-center justify-center"
             drag
             dragConstraints={{ left: -125, right: 125, top: -125, bottom: 125 }}
             dragTransition={{ bounceDamping: 10, bounceStiffness: 600 }}
@@ -144,7 +148,7 @@ function App() {
         {/* Scroll Progress */}
         <motion.div
           variants={gridSquareVariants}
-          className="bg-slate-800 aspect-square rounded-lg justify-center flex items-center gap-10"
+          className="bg-slate-800 aspect-square rounded-lg flex items-center justify-center gap-10"
         >
           <motion.div className="w-40 aspect-square bg-gray-50/20 rounded-xl">
             <motion.div
@@ -157,7 +161,7 @@ function App() {
         {/* SVG Animation */}
         <motion.div
           variants={gridSquareVariants}
-          className="bg-slate-800 aspect-square rounded-lg justify-center flex items-center gap-10"
+          className="bg-slate-800 aspect-square rounded-lg flex items-center justify-center gap-10"
         >
           <motion.svg
             xmlns="http://www.w3.org/2000/svg"
@@ -192,18 +196,15 @@ function App() {
         </motion.div>
       </motion.section>
 
-      {/* Some other animations */}
-      <section className="flex flex-col gap-10 mb-10" ref={containerRef}>
+      {/* Text Section with Animation */}
+      <section className="flex flex-col gap-10 mb-10" ref={textSectionRef}>
         <motion.h1
           className="text-5xl tracking-wide text-slate-100 text-center"
           animate={mainControls}
           initial="hidden"
           variants={{
             hidden: { opacity: 0, y: 75 },
-            visible: {
-              opacity: 1,
-              y: 0,
-            },
+            visible: { opacity: 1, y: 0 },
           }}
           transition={{ delay: 0.3 }}
         >
@@ -228,4 +229,5 @@ function App() {
     </div>
   );
 }
+
 export default App;
