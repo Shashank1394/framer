@@ -1,16 +1,10 @@
 // src/components/Header.jsx
 const Header = () => {
   return (
-    <header style={headerStyle}>
-      <h1>My Awesome App</h1>
+    <header className="text-5xl text-center p-5 text-slate-100">
+      <h1>Framer Animations</h1>
     </header>
   );
-};
-
-const headerStyle = {
-  color: "#f4f4f4",
-  textAlign: "center",
-  padding: "1rem",
 };
 
 export default Header;

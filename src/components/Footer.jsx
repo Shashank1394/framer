@@ -1,20 +1,13 @@
 // src/components/Footer.jsx
 const Footer = () => {
   return (
-    <footer style={footerStyle}>
+    <footer className="text-center p-5 text-slate-100">
       <p>
-        &copy; {new Date().getFullYear()} My Awesome App. All rights reserved.
+        &copy; {new Date().getFullYear()} Framer Animations. All rights
+        reserved.
       </p>
     </footer>
   );
-};
-
-const footerStyle = {
-  color: "#f4f4f4",
-  textAlign: "center",
-  padding: "1rem",
-  bottom: 0,
-  width: "100%",
 };
 
 export default Footer;
