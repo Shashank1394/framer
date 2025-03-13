@@ -214,16 +214,18 @@ function App() {
           style={{ translateX: paragraphOneValue }}
           className="text-slate-100 font-thin text-4xl w-1/2 mx-auto"
         >
-          This is a basic tutorial on how to get up and running with Framer
-          Motion with some TailwindCSS. If you enjoyed this video, please leave
-          a like and also subscribe.
+          This website harnesses the power of Framer Motion to create seamless,
+          dynamic animations. Every element—from grid transitions to interactive
+          drag components—has been designed to engage and delight.
         </motion.p>
         <motion.p
           style={{ translateX: paragraphTwoValue }}
           className="text-slate-100 font-thin text-4xl w-1/2 mx-auto"
         >
-          Have fun playing with Framer Motion. It is a very powerful library,
-          when used properly. Add some life to your websites.
+          By integrating TailwindCSS for styling and Framer Motion for fluid
+          animations, we ensure that the user experience is not only visually
+          captivating but also highly responsive as you scroll, click, and
+          interact with the site.
         </motion.p>
       </section>
     </div>
