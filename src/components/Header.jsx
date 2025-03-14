@@ -41,7 +41,7 @@ const Header = () => {
   };
 
   return (
-    <header className="text-5xl text-center p-5 text-slate-100">
+    <header className="text-3xl text-center p-5 text-slate-100 md:text-5xl">
       <motion.h1
         variants={containerVariants}
         initial="hidden"
