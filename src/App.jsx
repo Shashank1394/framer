@@ -143,6 +143,11 @@ function App() {
                 backgroundColor: "#d1d5db",
                 color: "black",
               }}
+              whileFocus={{
+                scale: 1.1,
+                backgroundColor: "#d1d5db",
+                color: "black",
+              }}
               transition={{ bounceDamping: 10, bounceStiffness: 600 }}
               className="bg-emerald-600 w-full sm:w-1/2 py-4 rounded-lg text-2xl text-gray-100 font-light tracking-wide"
             >
