@@ -10,7 +10,11 @@ import {
 import { useRef, useEffect, useState } from "react";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import { twMerge } from "tailwind-merge";
 
+// -------------------------------
+// Variants for animations
+// -------------------------------
 const gridContainerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -29,24 +33,158 @@ const svgIconVariants = {
   visible: { opacity: 1, pathLength: 1, fill: "rgba(252, 211, 77, 1)" },
 };
 
+// -------------------------------
+// Additional Components
+// -------------------------------
+const BounceCard = ({ className, children }) => {
+  return (
+    <motion.div
+      whileHover={{ scale: 0.95, rotate: "-1deg" }}
+      className={`w-70 group relative min-h-[300px] cursor-pointer overflow-hidden rounded-2xl bg-slate-100 p-8 ${className}`}
+    >
+      {children}
+    </motion.div>
+  );
+};
+
+const CardTitle = ({ children }) => {
+  return (
+    <h3 className="mx-auto text-center text-3xl font-semibold">{children}</h3>
+  );
+};
+
+// -------------------------------
+// DragCards Component and Helpers
+// -------------------------------
+export const DragCards = () => {
+  return (
+    // Adjusted to use full container dimensions rather than full-screen
+    <section className="relative grid h-full w-full place-content-center overflow-hidden bg-neutral-950">
+      <h2 className="relative z-0 text-[22vw] font-black text-neutral-800 md:text-[7vw]">
+        ASTRO<span className="text-indigo-500">.</span>
+      </h2>
+      <Cards />
+    </section>
+  );
+};
+
+const Cards = () => {
+  const containerRef = useRef(null);
+
+  return (
+    <div className="absolute inset-0 z-10" ref={containerRef}>
+      <DragCard
+        containerRef={containerRef}
+        src="https://images.unsplash.com/photo-1635373670332-43ea883bb081?q=80&w=2781&auto=format&fit=crop&ixlib=rb-4.0.3"
+        alt="Example image"
+        rotate="6deg"
+        top="20%"
+        left="25%"
+        className="w-36 md:w-56"
+      />
+      <DragCard
+        containerRef={containerRef}
+        src="https://images.unsplash.com/photo-1576174464184-fb78fe882bfd?q=80&w=2787&auto=format&fit=crop&ixlib=rb-4.0.3"
+        alt="Example image"
+        rotate="12deg"
+        top="45%"
+        left="60%"
+        className="w-24 md:w-48"
+      />
+      <DragCard
+        containerRef={containerRef}
+        src="https://images.unsplash.com/photo-1503751071777-d2918b21bbd9?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3"
+        alt="Example image"
+        rotate="-6deg"
+        top="20%"
+        left="40%"
+        className="w-52 md:w-80"
+      />
+      <DragCard
+        containerRef={containerRef}
+        src="https://images.unsplash.com/photo-1620428268482-cf1851a36764?q=80&w=2609&auto=format&fit=crop&ixlib=rb-4.0.3"
+        alt="Example image"
+        rotate="8deg"
+        top="50%"
+        left="40%"
+        className="w-48 md:w-72"
+      />
+      <DragCard
+        containerRef={containerRef}
+        src="https://images.unsplash.com/photo-1602212096437-d0af1ce0553e?q=80&w=2671&auto=format&fit=crop&ixlib=rb-4.0.3"
+        alt="Example image"
+        rotate="18deg"
+        top="20%"
+        left="65%"
+        className="w-40 md:w-64"
+      />
+      <DragCard
+        containerRef={containerRef}
+        src="https://images.unsplash.com/photo-1622313762347-3c09fe5f2719?q=80&w=2640&auto=format&fit=crop&ixlib=rb-4.0.3"
+        alt="Example image"
+        rotate="-3deg"
+        top="35%"
+        left="55%"
+        className="w-24 md:w-48"
+      />
+    </div>
+  );
+};
+
+const DragCard = ({ containerRef, src, alt, top, left, rotate, className }) => {
+  const [zIndex, setZIndex] = useState(0);
+
+  const updateZIndex = () => {
+    const els = document.querySelectorAll(".drag-elements");
+    let maxZIndex = -Infinity;
+    els.forEach((el) => {
+      let currentZ = parseInt(
+        window.getComputedStyle(el).getPropertyValue("z-index")
+      );
+      if (!isNaN(currentZ) && currentZ > maxZIndex) {
+        maxZIndex = currentZ;
+      }
+    });
+    setZIndex(maxZIndex + 1);
+  };
+
+  return (
+    <motion.img
+      onMouseDown={updateZIndex}
+      style={{ top, left, rotate, zIndex }}
+      className={twMerge(
+        "drag-elements absolute w-48 bg-neutral-200 p-1 pb-4",
+        className
+      )}
+      src={src}
+      alt={alt}
+      drag
+      dragConstraints={containerRef}
+      dragElastic={0.65}
+    />
+  );
+};
+
+// -------------------------------
+// Main App Component
+// -------------------------------
 function App() {
-  // For the grid section's scroll progress
+  // Enable smooth scrolling globally
+  useEffect(() => {
+    document.documentElement.style.scrollBehavior = "smooth";
+  }, []);
+
+  // Scroll progress for animations
   const { scrollYProgress: completionProgress } = useScroll();
-
-  // Create a separate ref for the text section
   const textSectionRef = useRef(null);
-
-  // Hook to detect if text section is in view (triggers once)
   const isTextInView = useInView(textSectionRef, { once: true });
   const mainControls = useAnimation();
 
-  // Scroll progress specifically for the text section animations
   const { scrollYProgress } = useScroll({
     target: textSectionRef,
     offset: ["start end", "end end"],
   });
 
-  // Create transform animations for paragraphs
   const paragraphOneValue = useTransform(
     scrollYProgress,
     [0, 1],
@@ -58,17 +196,13 @@ function App() {
     ["100%", "0%"]
   );
 
-  // State for drag constraint limit; default is 125px.
+  // State for drag constraints in the standalone drag example
   const [dragLimit, setDragLimit] = useState(125);
-
   useEffect(() => {
-    // Set up a media query to update dragLimit based on screen width.
     const mediaQuery = window.matchMedia("(max-width: 768px)");
     const handler = (e) => setDragLimit(e.matches ? 90 : 125);
-    // Set initial value based on current screen width.
     setDragLimit(mediaQuery.matches ? 90 : 125);
     mediaQuery.addEventListener("change", handler);
-
     return () => {
       mediaQuery.removeEventListener("change", handler);
     };
@@ -155,7 +289,7 @@ function App() {
             </motion.button>
           </motion.div>
 
-          {/* Drag */}
+          {/* Standalone Drag Example */}
           <motion.div
             variants={gridSquareVariants}
             className="bg-slate-800 aspect-square rounded-lg flex items-center justify-center p-4"
@@ -223,6 +357,29 @@ function App() {
                 }}
               />
             </motion.svg>
+          </motion.div>
+
+          {/* Bouncy Cards */}
+          <motion.div
+            variants={gridSquareVariants}
+            className="bg-slate-800 aspect-square rounded-lg flex items-center justify-center p-4"
+          >
+            <BounceCard>
+              <CardTitle>Hover Over</CardTitle>
+              <div className="absolute bottom-0 left-4 right-4 top-32 translate-y-8 rounded-t-2xl bg-gradient-to-br from-violet-400 to-indigo-400 p-4 transition-transform duration-[250ms] group-hover:translate-y-4 group-hover:rotate-[2deg]">
+                <span className="block text-center font-semibold text-indigo-50">
+                  :)
+                </span>
+              </div>
+            </BounceCard>
+          </motion.div>
+
+          {/* Drag Cards */}
+          <motion.div
+            variants={gridSquareVariants}
+            className="bg-slate-800 aspect-square rounded-lg flex items-center justify-center p-4"
+          >
+            <DragCards />
           </motion.div>
         </motion.section>
 
